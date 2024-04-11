@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     graphics.beginFill(0xFF0000);
     graphics.drawRect(0, 0, 100, 100);
     graphics.endFill();
-    
     app.stage.addChild(graphics);
     
     // Create a sprite
@@ -33,46 +32,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Handle touch input for mobile devices
+    let touchPosition = null; // Variable to store touch position
     document.addEventListener('touchstart', (event) => {
         const touch = event.touches[0];
-        handleTouchInput(touch);
+        touchPosition = { x: touch.clientX, y: touch.clientY }; // Update touch position
     });
 
     document.addEventListener('touchmove', (event) => {
         event.preventDefault(); // Prevent scrolling the page while moving the touch
         const touch = event.touches[0];
-        handleTouchInput(touch);
+        touchPosition = { x: touch.clientX, y: touch.clientY }; // Update touch position
     });
 
     document.addEventListener('touchend', () => {
-        handleTouchEnd();
+        touchPosition = null; // Reset touch position
     });
 
-    // Function to handle keyboard and touch input
-    function handleKeyboardInput() {
-        // Update ball velocity based on keyboard input
-        velocityX = (keys['ArrowRight'] ? speed : 0) - (keys['ArrowLeft'] ? speed : 0);
-        velocityY = (keys['ArrowDown'] ? speed : 0) - (keys['ArrowUp'] ? speed : 0);
-    }
-
-    function handleTouchInput(touch) {
-        // Update ball position based on touch input
-        // Example: Update ball position based on touch position
-        ball.x = touch.clientX;
-        ball.y = touch.clientY;
-    }
-
-    function handleTouchEnd() {
-        // Additional logic for touch end event if needed
-    }
-    
     // Animation loop
     app.ticker.add(() => {
+        // Handle keyboard input
+        velocityX = (keys['ArrowRight'] ? speed : 0) - (keys['ArrowLeft'] ? speed : 0);
+        velocityY = (keys['ArrowDown'] ? speed : 0) - (keys['ArrowUp'] ? speed : 0);
+
+        // Handle touch input
+        if (touchPosition) {
+            // Calculate distance from touch position to ball
+            const dx = touchPosition.x - ball.x;
+            const dy = touchPosition.y - ball.y;
+            // Move ball towards touch position
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance > 5) { // Threshold for touch move
+                const angle = Math.atan2(dy, dx);
+                velocityX = Math.cos(angle) * speed;
+                velocityY = Math.sin(angle) * speed;
+            } else {
+                velocityX = 0;
+                velocityY = 0;
+            }
+        }
+        
         // Update the position of the sprite
         ball.x += velocityX;
         ball.y += velocityY;
 
-        // Reverse direction if the ball reaches the screen edges (this doesn't work currently with the controller scheme thing)
+        // Reverse direction if the ball reaches the screen edges
         if (ball.x + ball.width / 2 >= app.screen.width || ball.x - ball.width / 2 <= 0) {
             velocityX *= -1;
         }
