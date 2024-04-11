@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const app = new PIXI.Application({ width: 800, height: 600, backgroundColor: 0x1099bb });
     document.getElementById('pixi-container').appendChild(app.view);
 
-    app.stage.addChild(graphics);
+    
 
     // Create a ball sprite
     const ball = PIXI.Sprite.from('https://pixijs.io/examples/examples/assets/bunny.png');
