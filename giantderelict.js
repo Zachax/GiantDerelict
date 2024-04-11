@@ -25,9 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const keys = {};
     document.addEventListener('keydown', (event) => {
         keys[event.key] = true;
+        console.log('Key pressed:', event.key);
     });
     document.addEventListener('keyup', (event) => {
         keys[event.key] = false;
+        console.log('Key released:', event.key);
     });
     
     // Animation loop
