@@ -65,9 +65,22 @@ document.addEventListener('DOMContentLoaded', () => {
             // Move sprite towards touch position
             const distance = Math.sqrt(dx * dx + dy * dy);
             if (distance > calibrationFactor) { // Adjusted threshold for touch move
-                const angle = Math.atan2(dy, dx);
-                velocityX = Math.cos(angle) * speed;
-                velocityY = Math.sin(angle) * speed;
+                // Adjust velocity based on touch position
+                const absDx = Math.abs(dx);
+                const absDy = Math.abs(dy);
+                if (absDy > absDx) { // Adjust velocity only if the vertical distance is greater
+                    const angle = Math.atan2(dy, dx);
+                    velocityX = Math.cos(angle) * speed;
+                    velocityY = Math.sin(angle) * speed;
+                } else {
+                    velocityX = 0;
+                    // Move vertically only if the touch position is above or below the sprite
+                    if (touchPosition.y < ball.y) {
+                        velocityY = -speed;
+                    } else if (touchPosition.y > ball.y) {
+                        velocityY = speed;
+                    }
+                }
             } else {
                 velocityX = 0;
                 velocityY = 0;
