@@ -14,14 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
     ball.anchor.set(0.5);
     ball.x = app.screen.width / 2;
     ball.y = app.screen.height / 2;
-    ball.vx = 5;
-    ball.vy = 5;
-    app.stage.addChild(ball);
+    app.stage.addChild(ball);  
     
     // Define initial velocity
     const speed = 5;
-    let velocityX = 0;
-    let velocityY = 0;
+    let velocityX = 5;
+    let velocityY = 5;
     
     // Handle keyboard input
     const keys = {};
@@ -51,15 +49,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Update the position of the sprite
-        ball.x += ball.vx;
-        ball.y += ball.vy;
+        ball.x += velocityX;
+        ball.y += velocityY;
 
         // Reverse direction if the ball reaches the screen edges
         if (ball.x + ball.width / 2 >= app.screen.width || ball.x - ball.width / 2 <= 0) {
-            ball.vx *= -1;
+            ball.velocityX *= -1;
         }
         if (ball.y + ball.height / 2 >= app.screen.height || ball.y - ball.height / 2 <= 0) {
-            ball.vy *= -1;
+            ball.velocityY *= -1;
         }
     });
 });
