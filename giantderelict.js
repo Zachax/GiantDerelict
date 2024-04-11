@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Key released:', event.key);
     });
 
+    // Define a mobile calibration factor
+    const calibrationFactor = 50; // Adjust as needed
+
     // Handle touch input for mobile devices
     let touchPosition = null; // Variable to store touch position
     document.addEventListener('touchstart', (event) => {
@@ -59,9 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Calculate distance from touch position to ball
             const dx = touchPosition.x - ball.x;
             const dy = touchPosition.y - ball.y;
-            // Move ball towards touch position
+            // Move sprite towards touch position
             const distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance > 5) { // Threshold for touch move
+            if (distance > calibrationFactor) { // Adjusted threshold for touch move
                 const angle = Math.atan2(dy, dx);
                 velocityX = Math.cos(angle) * speed;
                 velocityY = Math.sin(angle) * speed;
