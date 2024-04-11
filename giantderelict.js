@@ -74,10 +74,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Reverse direction if the ball reaches the screen edges (this doesn't work currently with the controller scheme thing)
         if (ball.x + ball.width / 2 >= app.screen.width || ball.x - ball.width / 2 <= 0) {
-            ball.velocityX *= -1;
+            velocityX *= -1;
         }
         if (ball.y + ball.height / 2 >= app.screen.height || ball.y - ball.height / 2 <= 0) {
-            ball.velocityY *= -1;
+            velocityY *= -1;
         }
     });
 });
