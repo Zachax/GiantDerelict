@@ -31,30 +31,48 @@ document.addEventListener('DOMContentLoaded', () => {
         keys[event.key] = false;
         console.log('Key released:', event.key);
     });
+
+    // Handle touch input for mobile devices
+    document.addEventListener('touchstart', (event) => {
+        const touch = event.touches[0];
+        handleTouchInput(touch);
+    });
+
+    document.addEventListener('touchmove', (event) => {
+        event.preventDefault(); // Prevent scrolling the page while moving the touch
+        const touch = event.touches[0];
+        handleTouchInput(touch);
+    });
+
+    document.addEventListener('touchend', () => {
+        handleTouchEnd();
+    });
+
+    // Function to handle keyboard and touch input
+    function handleKeyboardInput() {
+        // Update ball velocity based on keyboard input
+        velocityX = (keys['ArrowRight'] ? speed : 0) - (keys['ArrowLeft'] ? speed : 0);
+        velocityY = (keys['ArrowDown'] ? speed : 0) - (keys['ArrowUp'] ? speed : 0);
+    }
+
+    function handleTouchInput(touch) {
+        // Update ball position based on touch input
+        // Example: Update ball position based on touch position
+        ball.x = touch.clientX;
+        ball.y = touch.clientY;
+    }
+
+    function handleTouchEnd() {
+        // Additional logic for touch end event if needed
+    }
     
     // Animation loop
     app.ticker.add(() => {
-        // Update ball position based on keyboard input
-        if (keys['ArrowLeft']) {
-            velocityX = -speed;
-        } else if (keys['ArrowRight']) {
-            velocityX = speed;
-        } else {
-            velocityX = 0;
-        }
-        if (keys['ArrowUp']) {
-            velocityY = -speed;
-        } else if (keys['ArrowDown']) {
-            velocityY = speed;
-        } else {
-            velocityY = 0;
-        }
-        
         // Update the position of the sprite
         ball.x += velocityX;
         ball.y += velocityY;
 
-        // Reverse direction if the ball reaches the screen edges
+        // Reverse direction if the ball reaches the screen edges (this doesn't work currently with the controller scheme thing)
         if (ball.x + ball.width / 2 >= app.screen.width || ball.x - ball.width / 2 <= 0) {
             ball.velocityX *= -1;
         }
