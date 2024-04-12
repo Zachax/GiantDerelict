@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Define a mobile calibration factor
-    const calibrationFactor = 50; // Adjust as needed
+    const calibrationFactor = 5; // Adjust as needed
 
     // Handle touch input for mobile devices
     let touchPosition = null; // Variable to store touch position
