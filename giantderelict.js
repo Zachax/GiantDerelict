@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new PIXI.Application({ width: 800, height: 600, backgroundColor: 0x1099bb });
+    const screenWidth = 800;
+    const screenHeight = 600;
+    const app = new PIXI.Application({ width: screenWidth, height: screenHeight, backgroundColor: 0x1099bb });
     document.getElementById('pixi-container').appendChild(app.view);
     
     const graphics = new PIXI.Graphics();
@@ -7,28 +9,95 @@ document.addEventListener('DOMContentLoaded', () => {
     graphics.drawRect(0, 0, 100, 100);
     graphics.endFill();
     app.stage.addChild(graphics);
+
+    // Define the size of each cell
+    let cellSize = 50;
     
     // Create a sprite
-    const ball = PIXI.Sprite.from('https://pixijs.io/examples/examples/assets/bunny.png');
-    ball.anchor.set(0.5);
-    ball.x = app.screen.width / 2;
-    ball.y = app.screen.height / 2;
-    app.stage.addChild(ball);  
+    const player = PIXI.Sprite.from('https://pixijs.io/examples/examples/assets/bunny.png');
+    player.anchor.set(0.5);
+    //player.x = app.screen.width / 2;
+    //player.y = app.screen.height / 2;
+    //app.stage.addChild(player);  
     
     // Define initial velocity
-    const speed = 5;
+    const speed = cellSize;
     let velocityX = 5;
     let velocityY = 5;
+
+    // Generate level
+    const levelXsize = 10;
+    const levelYsize = 10;
+    let level = Array.from({ length: levelXsize }, () => new Array(levelYsize).fill(0));
+    // demo level
+    level = [
+        ['0', '0', '0', '0', 'X', 'X', 'X', 'X', '0', '0'],
+        ['0', 'X', 'X', 'X', 'X', '0', '0', 'X', '0', '0'],
+        ['0', 'X', '0', '0', '0', '0', '0', 'X', '0', '0'],
+        ['0', 'X', '0', '0', '0', '0', '0', 'X', 'X', 'X'],
+        ['0', 'X', 'X', '0', '0', '0', '0', '0', '0', '0'],
+        ['0', '0', 'X', '0', '0', '0', '0', '0', '0', '0'],
+        ['0', '0', 'X', '0', '0', '0', '0', '0', '0', '0'],
+        ['0', '0', 'X', 'X', 'X', 'X', '0', '0', '0', '0'],
+        ['0', '0', '0', '0', '0', 'X', '0', '0', '0', '0'],
+        ['0', '0', '0', '0', '0', 'X', '0', '0', '0', '0']
+      ];
+
+    // Create a container to hold the grid
+    let levelContainer = new PIXI.Container();
+    app.stage.addChild(levelContainer);
     
+    // Loop through the array and create a rectangle for each element
+    for (let row = 0; row < level.length; row++) {
+        for (let col = 0; col < level[row].length; col++) {
+            // Create a new graphics object for the cell
+            let cell = new PIXI.Graphics();
+
+            // Set the color based on the array value
+            let color = level[row][col] === 'X' ? 0xff0000 : 0xffffff; // Red for 'X', white for '0'
+
+            // Draw the rectangle
+            cell.beginFill(color);
+            cell.drawRect(col * cellSize, row * cellSize, cellSize, cellSize);
+            cell.endFill();
+
+            // Add the rectangle to the container
+            levelContainer.addChild(cell);
+        }
+    }
+
+    // Map location on the UI
+    let bounds = levelContainer.getLocalBounds();
+    levelContainer.x = screenWidth-bounds.width;
+    levelContainer.y = screenHeight-bounds.height;
+
+    // Add player on the map
+    player.x = levelContainer.width - cellSize / 2;
+    player.y = levelContainer.height - cellSize / 2;
+    levelContainer.addChild(player);
+        
     // Handle keyboard input
     const keys = {};
     document.addEventListener('keydown', (event) => {
         keys[event.key] = true;
-        console.log('Key pressed:', event.key);
+        //console.log('Key pressed:', event.key);
     });
     document.addEventListener('keyup', (event) => {
         keys[event.key] = false;
-        console.log('Key released:', event.key);
+        //console.log('Key released:', event.key);
+        // Check which key was released and move the player accordingly
+        if (event.code === 'ArrowUp') {
+            player.y -= cellSize;
+        }
+        if (event.code === 'ArrowDown') {
+            player.y += cellSize;
+        }
+        if (event.code === 'ArrowLeft') {
+            player.x -= cellSize;
+        }
+        if (event.code === 'ArrowRight') {
+            player.x += cellSize;
+        }
     });
 
     // Define a mobile calibration factor
@@ -49,54 +118,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('touchend', () => {
         touchPosition = null; // Reset touch position
-    });
-
-    // Animation loop
-    app.ticker.add(() => {
-        // Handle keyboard input
-        velocityX = (keys['ArrowRight'] ? speed : 0) - (keys['ArrowLeft'] ? speed : 0);
-        velocityY = (keys['ArrowDown'] ? speed : 0) - (keys['ArrowUp'] ? speed : 0);
-
-        // Handle touch input
-        if (touchPosition) {
-            // Calculate distance from touch position to ball
-            const dx = touchPosition.x - ball.x;
-            const dy = touchPosition.y - ball.y;
-            // Move sprite towards touch position
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance > calibrationFactor) { // Adjusted threshold for touch move
-                // Adjust velocity based on touch position
-                const absDx = Math.abs(dx);
-                const absDy = Math.abs(dy);
-                if (absDy > absDx) { // Adjust velocity only if the vertical distance is greater
-                    const angle = Math.atan2(dy, dx);
-                    velocityX = Math.cos(angle) * speed;
-                    velocityY = Math.sin(angle) * speed;
-                } else {
-                    velocityX = 0;
-                    // Move vertically only if the touch position is above or below the sprite
-                    if (touchPosition.y < ball.y) {
-                        velocityY = -speed;
-                    } else if (touchPosition.y > ball.y) {
-                        velocityY = speed;
-                    }
-                }
-            } else {
-                velocityX = 0;
-                velocityY = 0;
-            }
-        }
-        
-        // Update the position of the sprite
-        ball.x += velocityX;
-        ball.y += velocityY;
-
-        // Reverse direction if the ball reaches the screen edges
-        if (ball.x + ball.width / 2 >= app.screen.width || ball.x - ball.width / 2 <= 0) {
-            velocityX *= -1;
-        }
-        if (ball.y + ball.height / 2 >= app.screen.height || ball.y - ball.height / 2 <= 0) {
-            velocityY *= -1;
-        }
     });
 });
