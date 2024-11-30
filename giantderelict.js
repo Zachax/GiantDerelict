@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let cellSize = 50;
     
     // Create a sprite
-    const player = PIXI.Sprite.from('https://pixijs.io/examples/examples/assets/bunny.png');
+    const player = PIXI.Sprite.from('arrow.png');
     player.anchor.set(0.5);
     //player.x = app.screen.width / 2;
     //player.y = app.screen.height / 2;
